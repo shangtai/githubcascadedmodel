@@ -1,4 +1,4 @@
-Supplement for "Cascaded High Dimensional Histograms: A Generative Approach to Density Estimation
+Supplement for "Cascaded High Dimensional Histograms: A Generative Approach to Density Estimation"
 =================================================================================================
 
 We consider the problem of interpretable density estimation for high dimensional categorical data. In one or two dimensions, we would naturally consider histograms (bar charts) for simple density estimation problems. However, histograms do not scale to higher dimensions in an interpretable way, and one cannot usually visualize a high dimensional histogram. This repository presents implementation of two of the models presented in the paper ``Cascaded High Dimensional Histogram: A Generative Approach to Density Estimation'' to compute density trees.  The first one allows the user to specify the number of desired leaves in the tree as a Bayesian prior.  The second model allows the user to specify the desired number of rules and the length of rules within the prior and returns a list. 
