@@ -797,13 +797,13 @@ def simulatedannealingcrossvalidation(localdata,localtestdata,localvarietyMatrix
     leafcountvector = []
     nodecountvector = []
     crossvalidationvector=[simulatedannealing(data, priorparameter,warmstartindicator) for priorparameter in priorvector]
-    objectivefig = plt.figure()
-    plt.plot(objectivevector)
-    df=pd.DataFrame(objectivevector)
-    df.to_csv('objectivevector.csv',index=False,header=False)
-    plt.xlabel("index")
-    plt.ylabel("leaf based objective")
-    plt.savefig('objectiveevolution12'+str(splitindex)+'.jpg')
+    #objectivefig = plt.figure()
+    #plt.plot(objectivevector)
+    #df=pd.DataFrame(objectivevector)
+    #df.to_csv('objectivevector.csv',index=False,header=False)
+    #plt.xlabel("index")
+    #plt.ylabel("leaf based objective")
+    #plt.savefig('objectiveevolution12'+str(splitindex)+'.jpg')
 
     crossvalidationObjectiveVector=[crossresult[1] for crossresult in crossvalidationvector]
     besttreesofar=crossvalidationvector[crossvalidationObjectiveVector.index(min(crossvalidationObjectiveVector))][0] #yup, extract the best tree
