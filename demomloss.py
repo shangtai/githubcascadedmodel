@@ -2,7 +2,8 @@ import densitylistmloss
 import leafbasedmloss
 from numpy import *
 
-thefilename = 'stringdata'
+#thefilename = 'stringdata'
+thefilename = 'titanic'
 
 #the following line demonstrate how to call the density list model
 print "calling density list model"
