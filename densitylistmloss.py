@@ -1,4 +1,4 @@
-#######Supplement for "Interpretable classifiers using rules and Bayesian analysis: Building a better stroke prediction model."
+#######Supplement for "Cascaded High Dimensional Histograms: A Generative Approach to Density Estimation."
 
 ###LICENSE
 #
@@ -81,13 +81,13 @@ from collections import defaultdict,Counter
 import itertools
 
 
-def topscript(fname):
+def topscript(fname,lbda=3.,eta=1.,alpha=array([1.])):
     #fname = 'stringdata'
     
     #Prior hyperparameters
-    lbda = 3. #prior hyperparameter for expected list length (excluding null rule)
-    eta = 1. #prior hyperparameter for expected list average width (excluding null rule)
-    alpha = array([1.]) #prior hyperparameter for multinomial pseudocounts
+    #lbda = 3. #prior hyperparameter for expected list length (excluding null rule)
+    #eta = 1. #prior hyperparameter for expected list average width (excluding null rule)
+    #alpha = array([1.]) #prior hyperparameter for multinomial pseudocounts
     #alpha=1.
     #rule mining parameters
     maxlhs = 2 #maximum cardinality of an itemset

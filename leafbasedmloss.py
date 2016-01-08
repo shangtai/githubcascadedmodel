@@ -85,6 +85,19 @@ margin=0.01
 smallDensity=0.001
 
 
+def topscript(thefilename,priorparameter=[3],localalpha=2):
+    global featureTypeVector, alpha
+    alpha=localalpha
+    data=load_data(thefilename+'_train') #preparing training data
+    testdata=load_data(thefilename+'_test') #preparing test data
+    featureTypeVector=['cat']*len(data) #the original code was meant for something bigger, hence this akward line
+    varietyDetailMatrix = featureVarietyDetail(data)
+    varietyMatrix = featureVariety(data)
+    D=len(data[0])
+    repeatingindex=0
+    leafObjectiveFunction = simulatedannealingcrossvalidation(data,testdata, varietyMatrix,D,featureTypeVector,varietyDetailMatrix,[],[],priorparameter, False, repeatingindex,False)
+    print "the likelihood for test data is "+str(leafObjectiveFunction[1])
+
 def logDirichletNormalizingDiff(alpha,countVector):
     fakeCountVector=[c+alpha for c in countVector]
     return sum([logfactorialdiff(alpha-1, fakeCount) for fakeCount in fakeCountVector])-logfactorialdiff(len(countVector)*alpha-2, len(countVector)*alpha+sum(countVector))
@@ -157,7 +170,6 @@ def likelihood(p):
 
 probabilityvector=[0.99/4,0.99*0.5, 0.99*0.75,0.99]
 
-alpha=2
 maxm=100
 
 def logpriorfunction(k, priorlambda):
@@ -680,6 +692,7 @@ class Tree():
         return likelihood(self.getDensityForTest(testdata))
     
     def objectivevalue(self,data, priorValue):
+        global alpha
         ndata=len(data)
         countleaf=self.countleafoftree()
         factorialcomputation=0
@@ -693,23 +706,23 @@ class Tree():
         loglikelihood=sum([logfactorialdiff(alpha-1,nodecount[i]+alpha-1)-nodecount[i]*math.log(notUsedComplexityVector[i]) for i in range(len(nodelist))])-logfactorialdiff(countleaf*alpha-1,len(data)+countleaf*alpha-1)
         return -loglikelihood-logpriorfunction(countleaf,priorValue)
 
-    def branchobjectivevalue(self,data, priorValue):
-        ndata=len(data)
-        dimensionsize=len(data[0])
-        countleaf=self.countleafoftree()
-        factorialcomputation=0
-        leaflist=self.getValidLeaves()
-        leafcount=[0]*len(leaflist)
-        notUsedComplexityVector=[node.getNotUsedComplexity() for node in leaflist]
-        nodeindex=0
-        nodelist = self.getValidNodes()
-        for node in leaflist:
-            leafcount[nodeindex]=len(node.subdata)
-            nodeindex+=1
-        numberOfFeaturesUsed=self.getNumberOfFeaturesUsed()
-        numberOfFeatureParameter=0.25
-        loglikelihoodsum = -logfactorialdiff(0,numberOfFeaturesUsed)-logfactorialdiff(0,dimensionsize-numberOfFeaturesUsed)+numberOfFeaturesUsed*math.log(numberOfFeatureParameter)+(dimensionsize-numberOfFeaturesUsed)*math.log(1-numberOfFeatureParameter)-priorValue*len(nodelist)+math.log(priorValue)*(len(nodelist)-1)-sum([logfactorialdiff(0, node.getNumberOfBranch()-1)+logDirichletNormalizingDiff(2,[ len(self.tree[subnode].subdata) for subnode in node.getChild()]) for node in nodelist if node.getNumberOfBranch()>0])-sum([leafcount[i]*math.log(notUsedComplexityVector[i]) for i in range(len(leaflist))])
-        return -loglikelihoodsum
+    #def branchobjectivevalue(self,data, priorValue):
+    #    ndata=len(data)
+    #    dimensionsize=len(data[0])
+    #    countleaf=self.countleafoftree()
+    #    factorialcomputation=0
+    #    leaflist=self.getValidLeaves()
+    #    leafcount=[0]*len(leaflist)
+    #    notUsedComplexityVector=[node.getNotUsedComplexity() for node in leaflist]
+    #    nodeindex=0
+    #    nodelist = self.getValidNodes()
+    #    for node in leaflist:
+    #        leafcount[nodeindex]=len(node.subdata)
+    #        nodeindex+=1
+    #    numberOfFeaturesUsed=self.getNumberOfFeaturesUsed()
+    #    numberOfFeatureParameter=0.25
+    #    loglikelihoodsum = -logfactorialdiff(0,numberOfFeaturesUsed)-logfactorialdiff(0,dimensionsize-numberOfFeaturesUsed)+numberOfFeaturesUsed*math.log(numberOfFeatureParameter)+(dimensionsize-numberOfFeaturesUsed)*math.log(1-numberOfFeatureParameter)-priorValue*len(nodelist)+math.log(priorValue)*(len(nodelist)-1)-sum([logfactorialdiff(0, node.getNumberOfBranch()-1)+logDirichletNormalizingDiff(2,[ len(self.tree[subnode].subdata) for subnode in node.getChild()]) for node in nodelist if node.getNumberOfBranch()>0])-sum([leafcount[i]*math.log(notUsedComplexityVector[i]) for i in range(len(leaflist))])
+    #    return -loglikelihoodsum
     
     def counttrivialleaf(self):
         trivialleaf=0
@@ -884,12 +897,12 @@ def simulatedannealing(data, priorparameter,warmstartindicator):
             mytreei=copy.deepcopy(mytreec)
             mytreei.findneighbor(probabilityvector)
             mytreeiobjectivevalue=mytreei.objectivevalue(data, priorparameter)
-            if priorparameter == 4:
-                objectivevector.append(mytreeiobjectivevalue)
-                branchobjective2.append(mytreei.branchobjectivevalue(data, 2))
-                branchobjective3.append(mytreei.branchobjectivevalue(data, 3))
-                leafcountvector.append(len(mytreei.getValidLeaves()))
-                nodecountvector.append(len(mytreei.getValidNodes()))
+            #if priorparameter == 4:
+            #    objectivevector.append(mytreeiobjectivevalue)
+            #    branchobjective2.append(mytreei.branchobjectivevalue(data, 2))
+            #    branchobjective3.append(mytreei.branchobjectivevalue(data, 3))
+            #    leafcountvector.append(len(mytreei.getValidLeaves()))
+            #    nodecountvector.append(len(mytreei.getValidNodes()))
             DeltaE = abs(mytreeiobjectivevalue-fc)
             if (mytreeiobjectivevalue>fc):
                 # Initialize DeltaE_avg if a worse solution was found
@@ -951,16 +964,6 @@ def load_data(fname):
         data.append(ln.split())
     return data
 
-def topscript(thefilename):
-    global featureTypeVector
-    data=load_data(thefilename+'_train') #preparing training data
-    testdata=load_data(thefilename+'_test') #preparing test data
-    featureTypeVector=['cat']*len(data) #the original code was meant for something bigger, hence this akward line
-    varietyDetailMatrix = featureVarietyDetail(data)
-    varietyMatrix = featureVariety(data)
-    D=len(data[0])
-    repeatingindex=0
-    leafObjectiveFunction = simulatedannealingcrossvalidation(data,testdata, varietyMatrix,D,featureTypeVector,varietyDetailMatrix,[],[],[3,4], False, repeatingindex,False)
-    print "the likelihood for test data is "+str(leafObjectiveFunction[1])
+
 
 

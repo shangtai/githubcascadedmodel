@@ -19,7 +19,20 @@ ___________________________
 **To run the algorithms**
 
 We provided the Python implementation of the code. One just have to call the function topscript in the respective class.
-Two files have to be passed as the input to the model. Both files have to be TSV files.
+
+The training data and the test data has to be named filename_train.tab and filename_test.tab respectively. Both files have to be in tab-separated format.
+
+It is necessary to provide the filename to both of the algorithms. The other parameters are optional.
+
+For the density list algorithm:
+*the second parameter,lambda, is the desired length of the list
+*the third parameter,eta is the desired width of the rule
+*the fourth parameter is the alpha, an array for Dirichlet distribution
+
 Furthermore, we require for Density List algorithm, the categories names have to be distinct for different feature. If ``Male'' is used in feature 1, it can no longer be used in feature 2.
+
+For the leaf-based cascade mode:
+*the second parameter has to be a list, it stores the parameters for the desired lengths, we will perform cross validation
+*the third parameter is the alpha, a parameter for Dirichlet distribution
 
 The file demomloss illustrates how can we run the topscript code. 
